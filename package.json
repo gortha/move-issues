@@ -1,0 +1,12 @@
+{	
+	"scripts": {
+		"transfer": "tsc issueMoveLauncher.ts && node issueMoveLauncher"
+	},
+	"dependencies": {
+		"axios": "^1.7.2",
+		"dotenv": "^16.4.5"
+	},
+	"devDependencies": {
+		"@types/node": "^20.14.9"
+	}
+}
