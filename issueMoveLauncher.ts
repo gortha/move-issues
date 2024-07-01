@@ -25,6 +25,10 @@ interface GithubIssueAssignee {
 
 interface GithubIssueComment {
     body: string;
+    user: {
+        login: string;
+    };
+    created_at: string;
 }
 
 interface GithubIssue {
@@ -172,7 +176,10 @@ const transferIssues = async () => {
 
     console.info(`Number issue(s) to transfer: ${issuesDiff.length}`);
     for (const issue of issuesDiff) {
-        const labelNames = issue.labels.map(label => label.name);
+        const labels = issue.labels;
+
+
+        const labelNames = labels.map(label => label.name);
         const assigneeLogins = issue.assignees.map(assignee => assignee.login);
 
         console.log(`Creating issue: ${issue.title} in ${process.env.GITHUB_TO_REPO_URL}`);
@@ -187,11 +194,14 @@ const transferIssues = async () => {
 
         // Add Comments
         if (issue.comments > 0) {
-            const commentsFrom = (await getIssuesComments(process.env.GITHUB_FROM_REPO_URL, issue.number)) || [];            
+            const commentsFrom = (await getIssuesComments(process.env.GITHUB_FROM_REPO_URL, issue.number)) || [];
             console.info(`Number issue: ${issue.title} - comments to transfer: ${commentsFrom.length}`);
             for (const comment of commentsFrom) {
                 console.log(`Create issue: ${issue.title} - comment: ${comment.body} in ${process.env.GITHUB_TO_REPO_URL}`);
-                await createIssueCommentTarget(issueCreatedNumber, comment.body || '');
+                let body = comment.body;
+                body += '<br />User commented: ' + comment?.user?.login;
+                body += '<br />Created_at: ' + comment?.created_at;
+                await createIssueCommentTarget(issueCreatedNumber, body || '');
                 await sleep(1000);
             }
         }
