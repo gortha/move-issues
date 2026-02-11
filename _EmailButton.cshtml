@@ -1,0 +1,134 @@
+@* 
+    Reusable Email Button Partial View
+    File: _EmailButton.cshtml
+    
+    Usage:
+    @await Html.PartialAsync("_EmailButton", new EmailButtonModel 
+    { 
+        Url = "https://example.com", 
+        Text = "Click Me",
+        BackgroundColor = "#007bff",
+        TextColor = "#ffffff",
+        Width = 200,
+        Height = 44,
+        BorderRadius = 25
+    })
+*@
+
+@model EmailButtonModel
+
+@{
+    // Default values
+    var url = Model.Url ?? "https://example.com";
+    var text = Model.Text ?? "Click Here";
+    var bgColor = Model.BackgroundColor ?? "#007bff";
+    var txtColor = Model.TextColor ?? "#ffffff";
+    var width = Model.Width ?? 200;
+    var height = Model.Height ?? 44;
+    var radius = Model.BorderRadius ?? 25;
+    
+    // Calculate arcsize for Outlook VML
+    var arcsize = (int)Math.Round((double)radius / height * 100);
+    
+    // Font settings
+    var fontSize = Model.FontSize ?? 16;
+    var fontFamily = Model.FontFamily ?? "Arial, sans-serif";
+    var fontWeight = Model.FontWeight ?? "bold";
+    
+    // Border settings (optional)
+    var hasBorder = !string.IsNullOrEmpty(Model.BorderColor);
+    var borderColor = Model.BorderColor ?? bgColor;
+    var borderWidth = Model.BorderWidth ?? 2;
+    
+    // Adjust width for border
+    var htmlWidth = hasBorder ? width - (borderWidth * 2) : width;
+}
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        <td align="center" style="padding: @(Model.Padding ?? "20px 0");">
+            
+            @if (hasBorder)
+            {
+                @* Outlined Button - VML *@
+                @:<!--[if mso]>
+                <v:roundrect 
+                    xmlns:v="urn:schemas-microsoft-com:vml" 
+                    xmlns:w="urn:schemas-microsoft-com:office:word" 
+                    href="@url" 
+                    style="height:@(height)px;v-text-anchor:middle;width:@(width)px;" 
+                    arcsize="@(arcsize)%" 
+                    strokecolor="@borderColor" 
+                    strokeweight="@(borderWidth)px" 
+                    fillcolor="@bgColor">
+                    <w:anchorlock/>
+                    <center style="color:@txtColor;font-family:@fontFamily;font-size:@(fontSize)px;font-weight:@fontWeight;">
+                        @text
+                    </center>
+                </v:roundrect>
+                @:<![endif]-->
+                
+                @* Outlined Button - Standard HTML *@
+                @:<!--[if !mso]><!-->
+                <a href="@url" 
+                   style="background-color: @bgColor; 
+                          border: @(borderWidth)px solid @borderColor;
+                          border-radius: @(radius)px; 
+                          color: @txtColor; 
+                          display: inline-block; 
+                          font-family: @fontFamily; 
+                          font-size: @(fontSize)px; 
+                          font-weight: @fontWeight; 
+                          line-height: @(height - (borderWidth * 2))px; 
+                          text-align: center; 
+                          text-decoration: none; 
+                          width: @(htmlWidth)px; 
+                          -webkit-text-size-adjust: none; 
+                          mso-hide: all;">
+                    @text
+                </a>
+                @:<!--<![endif]-->
+            }
+            else
+            {
+                @* Solid Button - VML *@
+                @:<!--[if mso]>
+                <v:roundrect 
+                    xmlns:v="urn:schemas-microsoft-com:vml" 
+                    xmlns:w="urn:schemas-microsoft-com:office:word" 
+                    href="@url" 
+                    style="height:@(height)px;v-text-anchor:middle;width:@(width)px;" 
+                    arcsize="@(arcsize)%" 
+                    stroke="f" 
+                    fillcolor="@bgColor">
+                    <w:anchorlock/>
+                    <center style="color:@txtColor;font-family:@fontFamily;font-size:@(fontSize)px;font-weight:@fontWeight;">
+                        @text
+                    </center>
+                </v:roundrect>
+                @:<![endif]-->
+                
+                @* Solid Button - Standard HTML *@
+                @:<!--[if !mso]><!-->
+                <a href="@url" 
+                   style="background-color: @bgColor; 
+                          border-radius: @(radius)px; 
+                          color: @txtColor; 
+                          display: inline-block; 
+                          font-family: @fontFamily; 
+                          font-size: @(fontSize)px; 
+                          font-weight: @fontWeight; 
+                          line-height: @(height)px; 
+                          text-align: center; 
+                          text-decoration: none; 
+                          width: @(width)px; 
+                          -webkit-text-size-adjust: none; 
+                          mso-hide: all;">
+                    @text
+                </a>
+                @:<!--<![endif]-->
+            }
+            
+        </td>
+    </tr>
+</table>
